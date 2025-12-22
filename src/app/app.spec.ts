@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-
+// seems to be for testing
 describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({

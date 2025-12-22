@@ -1,1 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+  /* CSS HEX */
+  --success: #7F9172;
+  --error: #FE5F55;
+  --third: #4f5d75ff;
+  --primary: #7261a3ff;
+  --secondary: #a67db8ff;
+  --white: #ffffff;
+}
+
+@font-face {
+  font-family: jetbrains-mono;
+  src: url("../public/JetBrainsMono-VariableFont_wght.ttf") format("truetype");
+}
+
+body {
+  background-color: var(--white);
+  font-family: jetbrains-mono, monospace;
+  color: var(--primary);
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  height: 100vw;
+}
+
+.hidden {
+  display: none;
+}
+
