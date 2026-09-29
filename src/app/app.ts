@@ -8,7 +8,6 @@ import {FormsModule} from '@angular/forms';
   selector: 'app-root',
   templateUrl: './app.html',
   imports: [
-    JsonPipe,
     DecimalPipe,
     FormsModule
   ],

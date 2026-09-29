@@ -11,7 +11,8 @@
 <h1>
   Inventar
 </h1>
-<input type="text" [(ngModel)]="search" (ngModelChange)="updateTable($event)">
+<label for="search">Suche</label>
+<input type="text" [(ngModel)]="search" (ngModelChange)="updateTable($event)" name="search" placeholder="Töpfe">
 <div class="overview-table">
   <table>
     <tr class="table-header">

@@ -12,7 +12,7 @@ header li {
 header {
   box-sizing: border-box;
   padding: 1rem 2rem;
-  border-bottom: 2px solid var(--secondary);
+  border-bottom: 2px solid var(--primary);
 }
 
 table {
@@ -32,4 +32,20 @@ th {
 }
 
 td {
+}
+
+input {
+  border: 2px solid var(--third);
+  margin-block: 1rem;
+  padding: 0.5rem;
+  background-color: var(--primary);
+  color: var(--secondary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus-visible {
+  border: 2px solid var(--third);
 }

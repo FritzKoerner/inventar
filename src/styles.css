@@ -1,12 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
   /* CSS HEX */
-  --success: #7F9172;
+  --success: #63B995;
   --error: #FE5F55;
-  --third: #4f5d75ff;
+  --third: #00171F;
   --primary: #7261a3ff;
-  --secondary: #a67db8ff;
-  --white: #ffffff;
+  --secondary: #ffffff;
+  --info: #00A8E8;
 }
 
 @font-face {
@@ -15,13 +15,16 @@
 }
 
 body {
-  background-color: var(--white);
-  font-family: jetbrains-mono, monospace;
-  color: var(--primary);
+  background-color: var(--secondary);
   max-width: 1400px;
   margin-left: auto;
   margin-right: auto;
   height: 100vw;
+}
+
+* {
+  font-family: jetbrains-mono, monospace;
+  color: var(--primary);
 }
 
 .hidden {
