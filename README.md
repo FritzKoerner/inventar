@@ -62,6 +62,8 @@ The app runs at `http://localhost:4200/` and reloads on file changes.
 |------------------------------|-------------------------------------|
 | `npm start`                  | Dev server (development config)     |
 | `npm run build`              | Production build to `dist/`         |
+| `npm run seed`               | Insert test data into PocketBase    |
+| `npm run unseed`             | Remove exactly that test data       |
 
 ## Data model
 
@@ -76,6 +78,16 @@ The app runs at `http://localhost:4200/` and reloads on file changes.
 | `rental_status`     | View: outstanding units per rental (0 = fully returned)          |
 
 Schema changes are made as new migration files in `backend/pb_migrations/`.
+
+### Test data
+
+`npm run seed` inserts canteen equipment, categories, locations, and three rentals (open,
+partly returned, returned) from `backend/scripts/seed-data.mjs`. All test records have ids
+starting with `seed`; `npm run unseed` deletes exactly those and refuses if real records
+still reference them. Both run in one transaction, and re-running `seed` resets the data.
+
+The scripts log in as superuser with `PB_URL`, `PB_SUPERUSER_EMAIL` and
+`PB_SUPERUSER_PASSWORD`, falling back to the values in `environment.development.ts`.
 
 ## Style
 

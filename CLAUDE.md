@@ -35,6 +35,10 @@ npm run build                                      # production build -> dist/
 docker compose up -d --build                       # PocketBase on 127.0.0.1:8091, admin UI at /_/
 docker compose exec pocketbase /pb/pocketbase superuser upsert EMAIL PASS --dir /pb/pb_data
 docker compose logs -f pocketbase
+
+# test data, from the repo root (superuser creds: PB_* env vars or environment.development.ts)
+npm run seed                                       # upsert test data (ids "seed…"), one transaction
+npm run unseed                                     # delete exactly those ids; refuses if real data references them
 ```
 
 No linter is configured. Formatting follows the Prettier settings in `package.json`
@@ -77,6 +81,8 @@ building (`npm run build`) and running the app against PocketBase.
   `quantity_broken ≤ quantity`, item quantity can't drop below what's rented,
   `returned_quantity ≤ quantity`, no renting beyond availability or of archived items.
 - All collections require a logged-in user; there are no roles.
+- Test data lives in `backend/scripts/seed-data.mjs` with fixed `seed…` ids. When the schema
+  changes, update it so `npm run seed` still passes validation.
 
 ## Styling
 
