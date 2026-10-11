@@ -24,14 +24,15 @@ export class AuthService {
     this.pb.authStore.clear();
   }
 
-  // Stopgap until there is a login page: in development, sign in as the superuser from
-  // environment.development.ts so the app has data. Remove together with those credentials.
+  // Stopgap until there is a login page: sign in with the credentials from the environment
+  // file so the app has data. `production` picks the collection (users vs. _superusers).
+  // Remove together with those credentials.
   async loginFromEnvironment() {
-    if (environment.production || this.pb.authStore.isValid) {
+    if (!environment.pocketbaseSuperuser || this.pb.authStore.isValid) {
       return;
     }
     await this.pb
-      .collection('_superusers')
+      .collection(environment.production ? 'users' : '_superusers')
       .authWithPassword(environment.pocketbaseSuperuser, environment.pocketbasePassword);
   }
 }
