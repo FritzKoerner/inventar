@@ -1,59 +1,60 @@
-# InventarFrontend
+# Inventar
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.3.
+A web app for managing the equipment of a canteen kitchen. It focuses on simplicity and
+usability: finding an item, seeing where it is, and knowing whether it is available should
+take as few steps as possible.
 
-## Development server
+## Features
 
-To start a local development server, run:
+Planned:
 
-```bash
-ng serve
-```
+- **Items**: add, remove, and view items. Each item has a name, amount, description,
+  location, category, picture, and status (e.g. broken, currently rented out).
+- **Rental lists**: record which items were rented out, when, and who took them.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Currently implemented: an overview table of all items (name, amount, description, location,
+category) with a text search.
 
-## Code scaffolding
+## Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- Frontend: Angular 21 (this repo)
+- Backend: [PocketBase](https://pocketbase.io/), run separately, expected at
+  `http://127.0.0.1:8090/`
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+## Setup
 
 ```bash
-ng build
+npm install
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+The development build reads PocketBase credentials from
+`src/environments/environment.development.ts`. The file is gitignored, so create it locally:
 
-## Running unit tests
+```ts
+export const environment = {
+  production: false,
+  pocketbaseSuperuser: 'admin@example.com',
+  pocketbasePassword: '…',
+};
+```
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Start PocketBase, then the dev server:
 
 ```bash
-ng test
+npm start
 ```
 
-## Running end-to-end tests
+The app runs at `http://localhost:4200/` and reloads on file changes.
 
-For end-to-end (e2e) testing, run:
+## Commands
 
-```bash
-ng e2e
-```
+| Command                      | Description                         |
+|------------------------------|-------------------------------------|
+| `npm start`                  | Dev server (development config)     |
+| `npm run build`              | Production build to `dist/`         |
+| `npm test`                   | Unit tests with Vitest (watch mode) |
+| `npx ng test --watch=false`  | Unit tests, single run              |
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Style
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+UI and CSS conventions are documented in [STYLEGUIDE.md](STYLEGUIDE.md).
