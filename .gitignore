@@ -46,4 +46,6 @@ Thumbs.db
 src/environments/environment.development.ts
 
 # PocketBase database and uploaded files
-/backend/pb_data
+/backend/pb_data/*
+# Keep the directory so Docker doesn't create it as root on first start.
+!/backend/pb_data/.gitkeep
