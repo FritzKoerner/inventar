@@ -31,9 +31,6 @@ th {
   border-bottom: var(--third) 2px solid;
 }
 
-td {
-}
-
 input {
   border: 2px solid var(--third);
   margin-block: 1rem;
@@ -47,5 +44,6 @@ input {
 }
 
 input:focus-visible {
-  border: 2px solid var(--third);
+  outline: 2px solid var(--third);
+  outline-offset: 2px;
 }
