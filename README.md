@@ -19,7 +19,7 @@ category) with a text search.
 
 - Frontend: Angular 21 (this repo)
 - Backend: [PocketBase](https://pocketbase.io/) in Docker (`backend/`), at
-  `http://127.0.0.1:8090/`
+  `http://127.0.0.1:8091/`
 
 ## Setup
 
@@ -33,7 +33,7 @@ The development build reads PocketBase credentials from
 ```ts
 export const environment = {
   production: false,
-  pocketbaseUrl: 'http://127.0.0.1:8090',
+  pocketbaseUrl: 'http://127.0.0.1:8091',
   pocketbaseSuperuser: 'admin@example.com',
   pocketbasePassword: '…',
 };
@@ -48,7 +48,7 @@ docker compose up -d --build
 docker compose exec pocketbase /pb/pocketbase superuser upsert EMAIL PASS --dir /pb/pb_data
 ```
 
-The admin UI is at `http://127.0.0.1:8090/_/`. Then start the dev server from the repo root:
+The admin UI is at `http://127.0.0.1:8091/_/`. Then start the dev server from the repo root:
 
 ```bash
 npm start
