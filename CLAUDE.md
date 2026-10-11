@@ -20,9 +20,10 @@ Current state: only the read-only overview table exists (name, amount, descripti
 category, plus a text search). Picture, status, adding/removing items, and rentals are not
 implemented yet. The nav entry "Hinzufügen" is a placeholder without a route.
 
-This repo is the Angular 21 frontend only. The backend is a separate PocketBase instance
-expected at `http://127.0.0.1:8090/` (hardcoded in `src/app/services/pocketbase.service.ts`);
-it is not part of this repo and must be running for the app to show data. UI text is German.
+The repo holds the Angular 21 frontend (root) and the PocketBase backend (`backend/`). The
+frontend expects PocketBase at `http://127.0.0.1:8090/` (hardcoded in
+`src/app/services/pocketbase.service.ts`); it must be running for the app to show data.
+UI text is German, including user-facing error messages from backend hooks.
 
 ## Commands
 
@@ -32,6 +33,11 @@ npm run build                                      # production build -> dist/
 npm test                                           # Vitest via @angular/build:unit-test (watch mode)
 npx ng test --watch=false                          # single run
 npx ng test --watch=false --include src/app/app.spec.ts   # one spec file
+
+# backend, from backend/
+docker compose up -d --build                       # PocketBase on 127.0.0.1:8090, admin UI at /_/
+docker compose exec pocketbase /pb/pocketbase superuser upsert EMAIL PASS --dir /pb/pb_data
+docker compose logs -f pocketbase
 ```
 
 No linter is configured. Formatting follows the Prettier settings in `package.json`
@@ -50,6 +56,28 @@ the CLI scaffold heading `Hello, inventarFrontend`, while the template renders `
   (`production`, `pocketbaseSuperuser`, `pocketbasePassword`) or `ng serve` fails.
 - `production` selects the auth collection: `users` in production, `_superusers` in dev.
 
+## Backend (PocketBase)
+
+- `backend/Dockerfile` downloads a pinned PocketBase release (`PB_VERSION`); `compose.yaml`
+  bind-mounts `pb_data/` (gitignored: SQLite DB + uploads), `pb_migrations/`, `pb_hooks/`.
+- **Schema changes go into a new file in `backend/pb_migrations/`**, never only through the
+  admin UI — migrations are the source of truth and are applied automatically on startup.
+  Don't edit a migration that has already been applied; add a new one.
+- Collections: `categories`, `locations` (unique case-insensitive `name`); `items` (`quantity`,
+  `quantity_broken`, `location`, `category`, `picture`, `archived`); `rentals` (borrower,
+  dates); `rental_items` (junction: `rental`, `item`, `quantity`, `returned_quantity`,
+  `returned_at`, unique per rental+item).
+- Derived state is never stored: "rented out" and availability come from the view
+  collections `item_availability` (`rented`, `available`, keyed by item id) and
+  `rental_status` (`outstanding`, keyed by rental id). A rental is closed when
+  `outstanding = 0`.
+- Items are not deletable (`deleteRule: null`); "remove" means `archived = true`, so rental
+  history stays intact. Deleting a rental cascades to its `rental_items`.
+- `backend/pb_hooks/validation.pb.js` enforces the cross-field invariants on every save:
+  `quantity_broken ≤ quantity`, item quantity can't drop below what's rented,
+  `returned_quantity ≤ quantity`, no renting beyond availability or of archived items.
+- All collections require a logged-in user; there are no roles.
+
 ## Styling
 
 Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, component recipes).
@@ -62,9 +90,9 @@ Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, compo
 - Templates use the new control flow (`@for` … `track`) and signals (`inventory` is a
   `signal<RecordModel[]>`).
 - `PocketbaseService` creates a new PocketBase client and authenticates on every
-  `getInventory()` call, then fetches page 1 (25 records) of the `items` collection with
-  `expand: 'category_id'`. Record fields used by the table: `name`, `quantity`,
-  `description`, `storage`, and `expand.category_id.name`.
+  `getInventory()` call, then fetches page 1 (25 records) of non-archived `items` with
+  `expand: 'category,location'`. Record fields used by the table: `name`, `quantity`,
+  `description`, `expand.location.name`, `expand.category.name`.
 - Search filtering is done imperatively in `App.updateTable`: it queries the DOM for
   `table tr.table-items` and toggles the global `.hidden` class (defined in `src/styles.css`)
   based on `innerHTML.includes(...)`, only for inputs of 3+ characters. It is case-sensitive and

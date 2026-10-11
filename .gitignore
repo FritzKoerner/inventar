@@ -44,3 +44,6 @@ Thumbs.db
 
 # Local credentials
 src/environments/environment.development.ts
+
+# PocketBase database and uploaded files
+/backend/pb_data
