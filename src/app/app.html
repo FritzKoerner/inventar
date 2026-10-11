@@ -27,8 +27,8 @@
         <td>{{ item["name"] }}</td>
         <td>{{ item["quantity"] | number}}</td>
         <td>{{ item["description"] }}</td>
-        <td>{{ item["storage"] }}</td>
-        <td>{{ item["expand"]?.["category_id"]?.["name"] }}</td>
+        <td>{{ item["expand"]?.["location"]?.["name"] }}</td>
+        <td>{{ item["expand"]?.["category"]?.["name"] }}</td>
       </tr>
     }
   </table>

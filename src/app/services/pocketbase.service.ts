@@ -15,7 +15,8 @@ export class PocketbaseService {
     await pb.collection(userCollection).authWithPassword(environment.pocketbaseSuperuser, environment.pocketbasePassword,
     );
     return pb.collection('items').getList(1, 25, {
-      expand: 'category_id'
+      filter: 'archived = false',
+      expand: 'category,location'
     });
   }
 }
