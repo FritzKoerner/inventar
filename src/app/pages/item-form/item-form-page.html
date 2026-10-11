@@ -1,0 +1,114 @@
+<h1>Hinzufügen</h1>
+
+@if (savedName()) {
+  <p class="message success" role="status">„{{ savedName() }}“ gespeichert.</p>
+}
+@if (serverError()) {
+  <p class="message error" role="alert">{{ serverError() }}</p>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()" novalidate>
+  <div class="field">
+    <label for="name">Name *</label>
+    <input id="name" #nameInput type="text" formControlName="name" placeholder="Kochtopf 20 l"
+           [class.invalid]="error('name')" [attr.aria-invalid]="!!error('name')" aria-describedby="name-error">
+    @if (error('name'); as message) {
+      <p id="name-error" class="field-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="quantity">Anzahl *</label>
+      <input id="quantity" type="number" min="1" step="1" formControlName="quantity"
+             [class.invalid]="error('quantity')" [attr.aria-invalid]="!!error('quantity')" aria-describedby="quantity-error">
+      @if (error('quantity'); as message) {
+        <p id="quantity-error" class="field-error">{{ message }}</p>
+      }
+    </div>
+    <div class="field">
+      <label for="quantity_broken">Davon defekt</label>
+      <input id="quantity_broken" type="number" min="0" step="1" formControlName="quantity_broken"
+             [class.invalid]="error('quantity_broken')" [attr.aria-invalid]="!!error('quantity_broken')"
+             aria-describedby="quantity_broken-error">
+      @if (error('quantity_broken'); as message) {
+        <p id="quantity_broken-error" class="field-error">{{ message }}</p>
+      }
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="description">Beschreibung</label>
+    <textarea id="description" rows="3" formControlName="description"
+              [class.invalid]="error('description')" [attr.aria-invalid]="!!error('description')"
+              aria-describedby="description-error"></textarea>
+    @if (error('description'); as message) {
+      <p id="description-error" class="field-error">{{ message }}</p>
+    }
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label for="location">Lagerort *</label>
+      <select id="location" formControlName="location"
+              [class.invalid]="error('location')" [attr.aria-invalid]="!!error('location')" aria-describedby="location-error">
+        <option value="" disabled>Bitte wählen …</option>
+        @for (location of locations(); track location.id) {
+          <option [value]="location.id">{{ location.name }}</option>
+        }
+        <option [value]="NEW">Neu …</option>
+      </select>
+      @if (error('location'); as message) {
+        <p id="location-error" class="field-error">{{ message }}</p>
+      }
+      @if (form.controls.location.value === NEW) {
+        <input type="text" formControlName="newLocation" placeholder="Keller Regal 2" aria-label="Neuer Lagerort"
+               [class.invalid]="error('newLocation')" [attr.aria-invalid]="!!error('newLocation')"
+               aria-describedby="newLocation-error">
+        @if (error('newLocation'); as message) {
+          <p id="newLocation-error" class="field-error">{{ message }}</p>
+        }
+      }
+    </div>
+    <div class="field">
+      <label for="category">Kategorie *</label>
+      <select id="category" formControlName="category"
+              [class.invalid]="error('category')" [attr.aria-invalid]="!!error('category')" aria-describedby="category-error">
+        <option value="" disabled>Bitte wählen …</option>
+        @for (category of categories(); track category.id) {
+          <option [value]="category.id">{{ category.name }}</option>
+        }
+        <option [value]="NEW">Neu …</option>
+      </select>
+      @if (error('category'); as message) {
+        <p id="category-error" class="field-error">{{ message }}</p>
+      }
+      @if (form.controls.category.value === NEW) {
+        <input type="text" formControlName="newCategory" placeholder="Töpfe" aria-label="Neue Kategorie"
+               [class.invalid]="error('newCategory')" [attr.aria-invalid]="!!error('newCategory')"
+               aria-describedby="newCategory-error">
+        @if (error('newCategory'); as message) {
+          <p id="newCategory-error" class="field-error">{{ message }}</p>
+        }
+      }
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="picture">Bild</label>
+    <input id="picture" #pictureInput type="file" [accept]="pictureTypes" (change)="onPictureChange()"
+           [class.invalid]="error('picture')" [attr.aria-invalid]="!!error('picture')" aria-describedby="picture-error">
+    @if (error('picture'); as message) {
+      <p id="picture-error" class="field-error">{{ message }}</p>
+    }
+    @if (picturePreview()) {
+      <div class="preview">
+        <img [src]="picturePreview()" alt="Vorschau des gewählten Bildes">
+        <button type="button" (click)="removePicture()">Bild entfernen</button>
+      </div>
+    }
+  </div>
+
+  <p class="hint">* Pflichtfeld</p>
+  <button type="submit" [disabled]="saving()">{{ saving() ? 'Speichert …' : 'Speichern' }}</button>
+</form>

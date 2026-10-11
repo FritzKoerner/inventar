@@ -8,13 +8,7 @@ import {
   RentalStatus,
   RentalWithStatus,
 } from '../models';
-
-// PocketBase record ids: 15 chars of [a-z0-9]. Generated client-side so the rental_items in
-// the same batch can reference a rental that doesn't exist yet.
-function newRecordId(): string {
-  const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  return Array.from(crypto.getRandomValues(new Uint8Array(15)), (b) => alphabet[b % 36]).join('');
-}
+import {newRecordId} from './record-id';
 
 @Injectable({
   providedIn: 'root',

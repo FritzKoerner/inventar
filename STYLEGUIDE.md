@@ -71,10 +71,29 @@ Focus: `2px solid var(--third)` outline with `2px` offset — every focusable el
 visible focus state like this.
 Always paired with a `<label for>`; give a German example as placeholder.
 
-**New components** (buttons, badges, messages) follow the same recipe: rectangular, 2px
-border, token colors, spacing from the table above. A button matches the input
-(filled `--primary`, white bold text); a state message is a `--success`/`--error`/`--info`
-fill with `--third` text and border.
+**Select / textarea** — same recipe as the text input (global in `src/styles.css`).
+Textareas resize vertically only.
+
+**Form field** — `<label>` (block) above the control; the field's error directly below it.
+Required fields are marked with ` *` in the label and a `* Pflichtfeld` hint above the
+submit button. Show errors once a field is touched or after a submit attempt, never on a
+fresh form. Invalid controls get the `.invalid` class (border turns `--error`).
+
+**Button** — `--primary` fill, `--secondary` bold text, `2px solid var(--third)` border,
+`0.5rem 1rem` padding. `.danger` (destructive, e.g. "Entfernen"): `--error` fill with
+`--third` text. Disabled: 60 % opacity. Keep submit buttons enabled while the form is invalid
+(a disabled button doesn't say why); disable only while saving. The file input's picker
+button uses the inverted look (`--secondary` fill, `--primary` text).
+
+**Messages** — `.message.success` / `.message.error` for page-level feedback,
+`.field-error` under a field: state-color fill, `--third` text, `2px solid var(--third)`
+border, `0.5rem` padding. Use `role="status"` for success and `role="alert"` for errors.
+
+**Nav links** — no underline; the active and hovered link get a `2px` `--primary` bottom
+border and bold weight (`routerLinkActive="active"`).
+
+**Confirmations** — destructive actions ask via the browser's `confirm()` with the item name
+in German quotes: `„Kochtopf“ wirklich entfernen?`
 
 ## Utilities
 
@@ -88,6 +107,7 @@ fill with `--third` text and border.
 
 ## Where styles go
 
-- Tokens, `@font-face`, global resets and utilities: `src/styles.css`.
+- Tokens, `@font-face`, global resets, utilities, and the shared control styles (inputs,
+  selects, textareas, buttons, messages, field errors): `src/styles.css`.
 - Everything else: the component's own stylesheet. The production build warns at 4 kB and
   fails at 8 kB per component stylesheet, so keep component CSS lean.

@@ -31,3 +31,92 @@ body {
   display: none;
 }
 
+
+input,
+select,
+textarea {
+  border: 2px solid var(--third);
+  margin-block: 1rem;
+  padding: 0.5rem;
+  background-color: var(--primary);
+  color: var(--secondary);
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--secondary);
+  opacity: 0.5;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--third);
+  outline-offset: 2px;
+}
+
+.invalid {
+  border-color: var(--error);
+}
+
+label {
+  display: block;
+}
+
+button,
+input::file-selector-button {
+  border: 2px solid var(--third);
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: var(--secondary);
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+input::file-selector-button {
+  margin-right: 1rem;
+  background-color: var(--secondary);
+  color: var(--primary);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button.danger {
+  background-color: var(--error);
+  color: var(--third);
+}
+
+/* State colors fail contrast as text on white, so they are fills with --third text. */
+.message,
+.field-error {
+  border: 2px solid var(--third);
+  padding: 0.5rem;
+  color: var(--third);
+}
+
+.message.success {
+  background-color: var(--success);
+}
+
+.message.error,
+.field-error {
+  background-color: var(--error);
+}
+
+.field-error {
+  margin-block: 0;
+}

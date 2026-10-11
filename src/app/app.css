@@ -15,35 +15,17 @@ header {
   border-bottom: 2px solid var(--primary);
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  border-color: var(--third);
-  border-width: 2px;
-  border-style: solid;
-}
-th, td {
-  padding: 1rem 2rem;
-  text-align: left
-}
-th {
-  color: var(--third);
-  border-bottom: var(--third) 2px solid;
+header a {
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
 }
 
-input {
-  border: 2px solid var(--third);
-  margin-block: 1rem;
-  padding: 0.5rem;
-  background-color: var(--primary);
-  color: var(--secondary);
-  font-size: 1.2rem;
+header a:hover,
+header a.active {
+  border-bottom-color: var(--primary);
   font-weight: bold;
-  width: 100%;
-  box-sizing: border-box;
 }
 
-input:focus-visible {
-  outline: 2px solid var(--third);
-  outline-offset: 2px;
+main {
+  padding-inline: 1rem;
 }

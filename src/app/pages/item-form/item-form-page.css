@@ -1,0 +1,46 @@
+form {
+  max-width: 800px;
+}
+
+.field {
+  margin-block: 1rem;
+}
+
+.field input,
+.field select,
+.field textarea {
+  margin-block: 0.5rem 0;
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+}
+
+.row > .field {
+  flex: 1;
+}
+
+@media (max-width: 600px) {
+  .row {
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+.preview {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-block: 1rem;
+}
+
+.preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border: 2px solid var(--third);
+}
+
+.hint {
+  color: var(--third);
+}

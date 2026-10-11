@@ -2,34 +2,12 @@
 <header>
 <nav>
   <ul>
-    <li>Übersicht</li>
-    <li>Hinzufügen</li>
+    <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Übersicht</a></li>
+    <li><a routerLink="/hinzufuegen" routerLinkActive="active">Hinzufügen</a></li>
   </ul>
 </nav>
 </header>
 
-<h1>
-  Inventar
-</h1>
-<label for="search">Suche</label>
-<input type="text" [(ngModel)]="search" (ngModelChange)="updateTable($event)" name="search" placeholder="Töpfe">
-<div class="overview-table">
-  <table>
-    <tr class="table-header">
-      @for( header of tableHeaders; track $index) {
-        <th>
-          {{ header }}
-        </th>
-      }
-    </tr>
-    @for (item of inventory(); track item.id) {
-      <tr class="table-items">
-        <td>{{ item.name }}</td>
-        <td>{{ item.quantity | number}}</td>
-        <td>{{ item.description }}</td>
-        <td>{{ item.expand?.location?.name }}</td>
-        <td>{{ item.expand?.category?.name }}</td>
-      </tr>
-    }
-  </table>
-</div>
+<main>
+  <router-outlet />
+</main>

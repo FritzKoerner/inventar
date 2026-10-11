@@ -1,0 +1,19 @@
+table {
+  border-collapse: collapse;
+  width: 100%;
+  border-color: var(--third);
+  border-width: 2px;
+  border-style: solid;
+}
+th, td {
+  padding: 1rem 2rem;
+  text-align: left
+}
+th {
+  color: var(--third);
+  border-bottom: var(--third) 2px solid;
+}
+
+td.actions {
+  text-align: right;
+}

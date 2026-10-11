@@ -1,0 +1,37 @@
+<h1>
+  Inventar
+</h1>
+@if (removeError()) {
+  <p class="message error" role="alert">{{ removeError() }}</p>
+}
+<label for="search">Suche</label>
+<input type="search" id="search" [(ngModel)]="search" name="search" placeholder="Töpfe">
+<div class="overview-table">
+  <table>
+    <tr class="table-header">
+      @for( header of tableHeaders; track $index) {
+        <th>
+          {{ header }}
+        </th>
+      }
+    </tr>
+    @for (item of filteredInventory(); track item.id) {
+      <tr class="table-items">
+        <td>{{ item.name }}</td>
+        <td>{{ item.quantity | number}}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.expand?.location?.name }}</td>
+        <td>{{ item.expand?.category?.name }}</td>
+        <td class="actions">
+          <button type="button" class="danger" (click)="remove(item)">Entfernen</button>
+        </td>
+      </tr>
+    } @empty {
+      @if (search()) {
+        <tr>
+          <td colspan="6">Keine Treffer für „{{ search() }}“.</td>
+        </tr>
+      }
+    }
+  </table>
+</div>

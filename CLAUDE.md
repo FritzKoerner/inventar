@@ -16,12 +16,12 @@ Planned scope:
 - **Rental lists** — users can record when items are rented out: which items, the dates, and
   who took them.
 
-Current state: only the read-only overview table exists (name, amount, description, location,
-category, plus a text search). Picture, status, adding/removing items, and rentals are not
-implemented yet. The nav entry "Hinzufügen" is a placeholder without a route.
+Current state: the overview table (with text search and a remove button per row) and a form
+to add items (all fields, including picture and inline creation of categories/locations).
+Editing items, showing pictures/availability, and rentals are not implemented in the UI yet.
 
 The repo holds the Angular 21 frontend (root) and the PocketBase backend (`backend/`). The
-frontend expects PocketBase at `http://127.0.0.1:8090/` (`pocketbaseUrl` in
+frontend expects PocketBase at `http://127.0.0.1:8091/` (`pocketbaseUrl` in
 `src/environments/`); it must be running for the app to show data.
 UI text is German, including user-facing error messages from backend hooks.
 
@@ -32,7 +32,7 @@ npm start                                          # ng serve, dev config, http:
 npm run build                                      # production build -> dist/
 
 # backend, from backend/
-docker compose up -d --build                       # PocketBase on 127.0.0.1:8090, admin UI at /_/
+docker compose up -d --build                       # PocketBase on 127.0.0.1:8091, admin UI at /_/
 docker compose exec pocketbase /pb/pocketbase superuser upsert EMAIL PASS --dir /pb/pb_data
 docker compose logs -f pocketbase
 ```
@@ -84,9 +84,16 @@ Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, compo
 
 ## Architecture
 
-- Standalone-component app, no NgModules. Bootstrap in `src/main.ts` with `appConfig`
-  (`src/app/app.config.ts`); `app.routes.ts` is empty, so everything currently lives in the
-  root `App` component (`src/app/app.ts` / `app.html` / `app.css`).
+- Standalone-component, zoneless app (no zone.js): async state that the template shows must
+  live in signals, or the view won't update. Bootstrap in `src/main.ts` with `appConfig`.
+- Routes (`app.routes.ts`): `''` → `pages/inventory/InventoryPage`, `'hinzufuegen'` →
+  `pages/item-form/ItemFormPage`. `App` is only the header nav and `<router-outlet>`.
+- `ItemFormPage` uses typed Reactive Forms. Validators in `src/app/validators.ts` mirror the
+  backend schema and hooks (keep them in sync). "Neu …" in the category/location selects
+  enables a text control; `ItemService.create(draft, newLookups)` saves the new lookup and
+  the item in one batch and reports a failed lookup under the `category`/`location` key.
+  After saving, the form resets but keeps location and category (shelf-by-shelf entry).
+- Removing an item archives it (`ItemService.archive`) after a `confirm()`.
 - Templates use the new control flow (`@for` … `track`) and signals (`inventory` is a
   `signal<RecordModel[]>`).
 - Backend access goes through services in `src/app/services/`, never through the SDK in
@@ -101,16 +108,15 @@ Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, compo
 - `RentalService.create` sends the rental and its `rental_items` in one batch request (one
   transaction; batch API enabled by migration). The rental id is generated client-side so
   the lines can reference it within the batch.
-- Dev-only stopgap: `provideAppInitializer` in `app.config.ts` calls
-  `AuthService.loginFromEnvironment()`, which signs in as the superuser from
-  `environment.development.ts`. Remove it once a login page exists.
-- Search filtering is done imperatively in `App.updateTable`: it queries the DOM for
-  `table tr.table-items` and toggles the global `.hidden` class (defined in `src/styles.css`)
-  based on `innerHTML.includes(...)`, only for inputs of 3+ characters. It is case-sensitive and
-  not driven by the signal.
+- Stopgap until a login page exists: `provideAppInitializer` in `app.config.ts` calls
+  `AuthService.loginFromEnvironment()`, which signs in with the credentials from the
+  environment file — into `users` if `production` is true, else `_superusers`.
+- Search in `InventoryPage` is a `computed` over the `inventory` signal: case-insensitive
+  substring match on name, description, location and category.
 - Styling: color palette as CSS custom properties on `:root` in `src/styles.css`
-  (`--primary`, `--secondary`, `--success`, `--error`, `--info`, `--third`); JetBrains Mono is
-  self-hosted from `public/`. The production build enforces a 4 kB warning / 8 kB error budget
+  (`--primary`, `--secondary`, `--success`, `--error`, `--info`, `--third`), plus the shared
+  control styles (inputs, selects, buttons, messages); JetBrains Mono is self-hosted from
+  `public/`. The production build enforces a 4 kB warning / 8 kB error budget
   per component stylesheet.
 - TypeScript is strict, including `noPropertyAccessFromIndexSignature` and `strictTemplates`:
   use the typed models for dot access; untyped `RecordModel` fields need bracket access.
