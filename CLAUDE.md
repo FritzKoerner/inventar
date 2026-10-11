@@ -21,8 +21,8 @@ category, plus a text search). Picture, status, adding/removing items, and renta
 implemented yet. The nav entry "Hinzufügen" is a placeholder without a route.
 
 The repo holds the Angular 21 frontend (root) and the PocketBase backend (`backend/`). The
-frontend expects PocketBase at `http://127.0.0.1:8090/` (hardcoded in
-`src/app/services/pocketbase.service.ts`); it must be running for the app to show data.
+frontend expects PocketBase at `http://127.0.0.1:8090/` (`pocketbaseUrl` in
+`src/environments/`); it must be running for the app to show data.
 UI text is German, including user-facing error messages from backend hooks.
 
 ## Commands
@@ -30,9 +30,6 @@ UI text is German, including user-facing error messages from backend hooks.
 ```bash
 npm start                                          # ng serve, dev config, http://localhost:4200
 npm run build                                      # production build -> dist/
-npm test                                           # Vitest via @angular/build:unit-test (watch mode)
-npx ng test --watch=false                          # single run
-npx ng test --watch=false --include src/app/app.spec.ts   # one spec file
 
 # backend, from backend/
 docker compose up -d --build                       # PocketBase on 127.0.0.1:8090, admin UI at /_/
@@ -43,8 +40,9 @@ docker compose logs -f pocketbase
 No linter is configured. Formatting follows the Prettier settings in `package.json`
 (100 cols, single quotes, Angular parser for `.html`).
 
-Known state: the `should render title` test in `src/app/app.spec.ts` fails — it still expects
-the CLI scaffold heading `Hello, inventarFrontend`, while the template renders `Inventar`.
+This project deliberately has **no tests** and no test setup (no Vitest, no spec files). Don't
+add tests; `ng generate` is configured with `skipTests` in `angular.json`. Verify changes by
+building (`npm run build`) and running the app against PocketBase.
 
 ## Environments and credentials
 
@@ -53,13 +51,15 @@ the CLI scaffold heading `Hello, inventarFrontend`, while the template renders `
   `src/environments/environment.development.ts` via `fileReplacements` in `angular.json`.
 - `environment.development.ts` holds PocketBase superuser credentials and is **gitignored** —
   never commit it. A fresh clone has to create it with the same shape
-  (`production`, `pocketbaseSuperuser`, `pocketbasePassword`) or `ng serve` fails.
-- `production` selects the auth collection: `users` in production, `_superusers` in dev.
+  (`production`, `pocketbaseUrl`, `pocketbaseSuperuser`, `pocketbasePassword`) or `ng serve`
+  fails.
 
 ## Backend (PocketBase)
 
 - `backend/Dockerfile` downloads a pinned PocketBase release (`PB_VERSION`); `compose.yaml`
   bind-mounts `pb_data/` (gitignored: SQLite DB + uploads), `pb_migrations/`, `pb_hooks/`.
+  The container runs as UID/GID 1000 (override with `PB_UID`/`PB_GID`) so `pb_data` stays
+  owned by the host user; `pb_data/.gitkeep` exists so Docker doesn't create the dir as root.
 - **Schema changes go into a new file in `backend/pb_migrations/`**, never only through the
   admin UI — migrations are the source of truth and are applied automatically on startup.
   Don't edit a migration that has already been applied; add a new one.
@@ -89,10 +89,21 @@ Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, compo
   root `App` component (`src/app/app.ts` / `app.html` / `app.css`).
 - Templates use the new control flow (`@for` … `track`) and signals (`inventory` is a
   `signal<RecordModel[]>`).
-- `PocketbaseService` creates a new PocketBase client and authenticates on every
-  `getInventory()` call, then fetches page 1 (25 records) of non-archived `items` with
-  `expand: 'category,location'`. Record fields used by the table: `name`, `quantity`,
-  `description`, `expand.location.name`, `expand.category.name`.
+- Backend access goes through services in `src/app/services/`, never through the SDK in
+  components. `PocketbaseService` holds the single shared client (`pb`, URL from
+  `environment.pocketbaseUrl`) — the auth token lives in its `authStore`, so don't create
+  other `PocketBase` instances. Feature services on top: `AuthService` (login/logout, `user`
+  signal), `ItemService`, `LookupService` (categories + locations), `RentalService`.
+- Services are stateless and return Promises; components keep state in signals. SDK errors
+  propagate unchanged (hook messages are already German and can be shown as-is).
+- Record types live in `src/app/models.ts` and mirror the migrations — update both together.
+  The location type is `StorageLocation` (avoids shadowing the DOM `Location`).
+- `RentalService.create` sends the rental and its `rental_items` in one batch request (one
+  transaction; batch API enabled by migration). The rental id is generated client-side so
+  the lines can reference it within the batch.
+- Dev-only stopgap: `provideAppInitializer` in `app.config.ts` calls
+  `AuthService.loginFromEnvironment()`, which signs in as the superuser from
+  `environment.development.ts`. Remove it once a login page exists.
 - Search filtering is done imperatively in `App.updateTable`: it queries the DOM for
   `table tr.table-items` and toggles the global `.hidden` class (defined in `src/styles.css`)
   based on `innerHTML.includes(...)`, only for inputs of 3+ characters. It is case-sensitive and
@@ -101,5 +112,5 @@ Follow `STYLEGUIDE.md` for any UI or CSS change (tokens, borders, spacing, compo
   (`--primary`, `--secondary`, `--success`, `--error`, `--info`, `--third`); JetBrains Mono is
   self-hosted from `public/`. The production build enforces a 4 kB warning / 8 kB error budget
   per component stylesheet.
-- TypeScript is strict, including `noPropertyAccessFromIndexSignature` and `strictTemplates` —
-  hence the bracket access (`item["name"]`) on PocketBase `RecordModel`s in templates.
+- TypeScript is strict, including `noPropertyAccessFromIndexSignature` and `strictTemplates`:
+  use the typed models for dot access; untyped `RecordModel` fields need bracket access.

@@ -33,6 +33,7 @@ The development build reads PocketBase credentials from
 ```ts
 export const environment = {
   production: false,
+  pocketbaseUrl: 'http://127.0.0.1:8090',
   pocketbaseSuperuser: 'admin@example.com',
   pocketbasePassword: '…',
 };
@@ -61,8 +62,6 @@ The app runs at `http://localhost:4200/` and reloads on file changes.
 |------------------------------|-------------------------------------|
 | `npm start`                  | Dev server (development config)     |
 | `npm run build`              | Production build to `dist/`         |
-| `npm test`                   | Unit tests with Vitest (watch mode) |
-| `npx ng test --watch=false`  | Unit tests, single run              |
 
 ## Data model
 

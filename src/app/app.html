@@ -24,11 +24,11 @@
     </tr>
     @for (item of inventory(); track item.id) {
       <tr class="table-items">
-        <td>{{ item["name"] }}</td>
-        <td>{{ item["quantity"] | number}}</td>
-        <td>{{ item["description"] }}</td>
-        <td>{{ item["expand"]?.["location"]?.["name"] }}</td>
-        <td>{{ item["expand"]?.["category"]?.["name"] }}</td>
+        <td>{{ item.name }}</td>
+        <td>{{ item.quantity | number}}</td>
+        <td>{{ item.description }}</td>
+        <td>{{ item.expand?.location?.name }}</td>
+        <td>{{ item.expand?.category?.name }}</td>
       </tr>
     }
   </table>

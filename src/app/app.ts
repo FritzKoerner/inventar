@@ -1,6 +1,6 @@
 import {Component, inject, OnInit, signal} from '@angular/core';
-import {PocketbaseService} from './services/pocketbase.service';
-import {ListResult, RecordModel} from 'pocketbase';
+import {ItemService} from './services/item.service';
+import {Item} from './models';
 import {AsyncPipe, DecimalPipe, JsonPipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 
@@ -15,16 +15,16 @@ import {FormsModule} from '@angular/forms';
 })
 export class App implements OnInit {
   // what does | null = null?
-  inventory = signal<RecordModel[]>([])
+  inventory = signal<Item[]>([])
   search = ""
-  private pocketbaseService = inject(PocketbaseService)
+  private itemService = inject(ItemService)
 
   tableHeaders = ['Name', 'Anzahl', 'Beschreibung', 'Lagerort', 'Kategorie']
 
 
   getInventory() {
-    this.pocketbaseService.getInventory().then(result => {
-      this.inventory.set(result.items)
+    this.itemService.list().then(items => {
+      this.inventory.set(items)
     })
   }
 
